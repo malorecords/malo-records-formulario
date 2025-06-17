@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Envío de Material Musical</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000000 50%, #0d0d0d 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(220, 20, 60, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(220, 20, 60, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a, #2c2c2c);
+            border-radius: 20px;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.7),
+                inset 0 1px 0 rgba(255,255,255,0.15),
+                inset 0 -1px 0 rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid rgba(192,192,192,0.2);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #dc143c 0%, #8b0000 50%, #1a1a1a 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 30% 70%, rgba(255,255,255,0.15) 0%, transparent 50%),
+                linear-gradient(45deg, transparent 30%, rgba(192, 192, 192, 0.1) 50%, transparent 70%);
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #c0c0c0, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(255,255,255,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            color: #e0e0e0;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+        
+        .form-section {
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        .required {
+            color: #ff6b6b;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .upload-area {
+            border: 3px dashed #888888;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e, #2a2a2a);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-top: 10px;
+            color: #e0e0e0;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .upload-area:hover {
+            background: linear-gradient(145deg, #333333, #2a2a2a, #333333);
+            border-color: #dc143c;
+            box-shadow: 
+                0 8px 25px rgba(220, 20, 60, 0.3),
+                inset 0 2px 10px rgba(0,0,0,0.3);
+        }
+        
+        .upload-area.success {
+            background: linear-gradient(145deg, #1e3a1e, #2d4a2d, #1e3a1e);
+            border-color: #4caf50;
+            color: #a5d6a7;
+        }
+        
+        .seconds-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .seconds-input {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e1e8ed;
+        }
+        
+        .seconds-input label {
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .seconds-input input {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 0;
+        }
+        
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: #888888;
+        }
+        
+        .form-group select option {
+            background: #2a2a2a;
+            color: #ffffff;
+        }
+        
+        .platform-icon {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #00cec9, #00b894);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 206, 201, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .credits-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e1e8ed;
+        }
+        
+        .credit-item {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+        
+        .credit-item input {
+            margin: 0;
+        }
+        
+        .add-credit-btn {
+            background: #74b9ff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .seconds-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .header {
+                padding: 25px;
+            }
+            
+            .form-section {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MALO RECORDS</h1>
+            <p>Formulario de Envío Musical Oficial</p>
+        </div>
+        
+        <form class="form-section" id="musicForm">
+            
+            <!-- INFORMACIÓN BÁSICA -->
+            <div class="form-group">
+                <label for="releaseName">Nombre del Lanzamiento <span class="required">*</span></label>
+                <input type="text" id="releaseName" name="releaseName" placeholder="Ej: POTHA, Summer Vibes..." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="artists">Artistas del Lanzamiento <span class="required">*</span></label>
+                <input type="text" id="artists" name="artists" placeholder="Ej: 4NDY, MC XYZ feat. Producer ABC" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email de Contacto <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <!-- CRÉDITOS -->
+            <div class="form-group">
+                <label>Créditos</label>
+                <div class="credits-container" id="creditsContainer">
+                    <div class="credit-item">
+                        <input type="text" placeholder="Rol (Ej: Productor)" style="flex: 1;">
+                        <input type="text" placeholder="Nombre" style="flex: 2;">
+                        <button type="button" class="add-credit-btn" onclick="removeCredit(this)">❌</button>
+                    </div>
+                </div>
+                <button type="button" class="add-credit-btn" onclick="addCredit()" style="margin-top: 10px;">+ Agregar Crédito</button>
+            </div>
+            
+            <!-- ARCHIVOS -->
+            <div class="form-group">
+                <label for="audioFile">Audio WAV <span class="required">*</span></label>
+                <div class="upload-area" onclick="document.getElementById('audioFile').click()">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">🎵</div>
+                    <p><strong>Clickea para subir el audio WAV</strong></p>
+                    <p style="font-size: 0.9em; color: #666;">Solo archivos WAV</p>
+                </div>
+                <input type="file" id="audioFile" name="audioFile" accept=".wav" style="display: none;" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="artworkFile">Arte/Portada <span class="required">*</span></label>
+                <div class="upload-area" onclick="document.getElementById('artworkFile').click()">
+                    <div style="font-size: 2.5em; margin-bottom: 10px;">🎨</div>
+                    <p><strong>Clickea para subir el arte</strong></p>
+                    <p style="font-size: 0.9em; color: #666;">PNG/JPG 3000x3000px recomendado</p>
+                </div>
+                <input type="file" id="artworkFile" name="artworkFile" accept=".png,.jpg,.jpeg" style="display: none;" required>
+            </div>
+            
+            <!-- SEGUNDOS PARA REDES SOCIALES -->
+            <div class="form-group">
+                <label for="socialSeconds">Segundos Predeterminados para Redes Sociales</label>
+                <input type="number" id="socialSeconds" name="socialSeconds" min="15" max="180" value="30" placeholder="30">
+                <p style="font-size: 0.9em; color: #666; margin-top: 5px;">Se aplicará a todas las plataformas (TikTok, Instagram, Facebook, etc.)</p>
+            </div>
+            
+            <!-- INFORMACIÓN ADICIONAL -->
+            <div class="form-group">
+                <label for="releaseDate">Fecha de Lanzamiento</label>
+                <input type="date" id="releaseDate" name="releaseDate">
+            </div>
+            
+            <div class="form-group">
+                <label for="notes">Notas Adicionales</label>
+                <textarea id="notes" name="notes" rows="4" placeholder="Cualquier información adicional, referencias, comentarios especiales..."></textarea>
+            </div>
+            
+            <button type="submit" class="submit-btn">
+                Enviar
+            </button>
+        </form>
+    </div>
+    
+    <script>
+        // Función para agregar créditos
+        function addCredit() {
+            const container = document.getElementById('creditsContainer');
+            const creditItem = document.createElement('div');
+            creditItem.className = 'credit-item';
+            creditItem.innerHTML = `
+                <input type="text" placeholder="Rol (Ej: Productor)" style="flex: 1;">
+                <input type="text" placeholder="Nombre" style="flex: 2;">
+                <button type="button" class="add-credit-btn" onclick="removeCredit(this)">❌</button>
+            `;
+            container.appendChild(creditItem);
+        }
+        
+        // Función para remover créditos
+        function removeCredit(button) {
+            const container = document.getElementById('creditsContainer');
+            if (container.children.length > 1) {
+                button.parentElement.remove();
+            }
+        }
+        
+        // Manejo de archivos subidos
+        ['audioFile', 'artworkFile'].forEach(fieldId => {
+            document.getElementById(fieldId).addEventListener('change', function() {
+                const uploadArea = this.previousElementSibling;
+                if (this.files.length > 0) {
+                    const fileName = this.files[0].name;
+                    uploadArea.classList.add('success');
+                    uploadArea.innerHTML = `
+                        <div style="font-size: 2em; margin-bottom: 10px;">✅</div>
+                        <p><strong>${fileName}</strong></p>
+                        <p style="font-size: 0.9em; color: #666;">Click para cambiar archivo</p>
+                    `;
+                }
+            });
+        });
+        
+        // Validación y envío del formulario
+        document.getElementById('musicForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validar campos requeridos
+            const requiredFields = ['releaseName', 'artists', 'email', 'audioFile', 'artworkFile'];
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (field === 'audioFile' || field === 'artworkFile') {
+                    if (!element.files.length) {
+                        element.previousElementSibling.style.borderColor = '#e74c3c';
+                        isValid = false;
+                    } else {
+                        element.previousElementSibling.style.borderColor = '#27ae60';
+                    }
+                } else {
+                    if (!element.value.trim()) {
+                        element.style.borderColor = '#e74c3c';
+                        isValid = false;
+                    } else {
+                        element.style.borderColor = '#27ae60';
+                    }
+                }
+            });
+            
+            if (isValid) {
+                // Recopilar datos del formulario
+                const formData = new FormData(this);
+                
+                // Recopilar créditos
+                const credits = [];
+                document.querySelectorAll('#creditsContainer .credit-item').forEach(item => {
+                    const inputs = item.querySelectorAll('input');
+                    if (inputs[0].value.trim() || inputs[1].value.trim()) {
+                        credits.push({
+                            role: inputs[0].value.trim(),
+                            name: inputs[1].value.trim()
+                        });
+                    }
+                });
+                
+                // Simular envío
+                document.querySelector('.submit-btn').innerHTML = 'Procesando...';
+                document.querySelector('.submit-btn').disabled = true;
+                
+                setTimeout(() => {
+                    alert(`✅ ¡Material enviado correctamente!
+                    
+📝 RESUMEN:
+• Lanzamiento: ${formData.get('releaseName')}
+• Artistas: ${formData.get('artists')}
+• Audio: ${document.getElementById('audioFile').files[0]?.name}
+• Arte: ${document.getElementById('artworkFile').files[0]?.name}
+
+📧 Recibirás confirmación por email
+⏱️ Tiempo de revisión: 2-3 días hábiles`);
+                    
+                    document.querySelector('.submit-btn').innerHTML = 'Enviar';
+                    document.querySelector('.submit-btn').disabled = false;
+                    
+                    // Reset form
+                    this.reset();
+                    document.querySelectorAll('.upload-area').forEach(area => {
+                        area.classList.remove('success');
+                        area.innerHTML = area.innerHTML.replace(/✅.*/, area.querySelector('p').innerHTML);
+                    });
+                }, 2000);
+            } else {
+                alert('❌ Por favor completa todos los campos obligatorios marcados con *');
+            }
+        });
+        
+        // Establecer fecha mínima (hoy)
+        document.getElementById('releaseDate').min = new Date().toISOString().split('T')[0];
+    </script>
+</body>
+</html>

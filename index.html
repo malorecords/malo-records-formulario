@@ -285,17 +285,17 @@
             <p>Formulario de Envío Musical Oficial</p>
         </div>
         
-        <form class="form-section" id="musicForm">
+        <form class="form-section" id="musicForm" action="https://formspree.io/f/mjkrobor" method="POST">
             
             <!-- INFORMACIÓN BÁSICA -->
             <div class="form-group">
                 <label for="releaseName">Nombre del Lanzamiento <span class="required">*</span></label>
-                <input type="text" id="releaseName" name="releaseName" placeholder="Ej: POTHA, Summer Vibes..." required>
+                <input type="text" id="releaseName" name="releaseName" placeholder="Ingresa el nombre del lanzamiento..." required>
             </div>
             
             <div class="form-group">
                 <label for="artists">Artistas del Lanzamiento <span class="required">*</span></label>
-                <input type="text" id="artists" name="artists" placeholder="Ej: 4NDY, MC XYZ feat. Producer ABC" required>
+                <input type="text" id="artists" name="artists" placeholder="Ingresa los artistas y colaboradores..." required>
             </div>
             
             <div class="form-group">
@@ -401,9 +401,7 @@
         
         // Validación y envío del formulario
         document.getElementById('musicForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Validar campos requeridos
+            // Validar campos requeridos antes de enviar
             const requiredFields = ['releaseName', 'artists', 'email', 'audioFile', 'artworkFile'];
             let isValid = true;
             
@@ -426,51 +424,18 @@
                 }
             });
             
-            if (isValid) {
-                // Recopilar datos del formulario
-                const formData = new FormData(this);
-                
-                // Recopilar créditos
-                const credits = [];
-                document.querySelectorAll('#creditsContainer .credit-item').forEach(item => {
-                    const inputs = item.querySelectorAll('input');
-                    if (inputs[0].value.trim() || inputs[1].value.trim()) {
-                        credits.push({
-                            role: inputs[0].value.trim(),
-                            name: inputs[1].value.trim()
-                        });
-                    }
-                });
-                
-                // Simular envío
-                document.querySelector('.submit-btn').innerHTML = 'Procesando...';
-                document.querySelector('.submit-btn').disabled = true;
-                
-                setTimeout(() => {
-                    alert(`✅ ¡Material enviado correctamente!
-                    
-📝 RESUMEN:
-• Lanzamiento: ${formData.get('releaseName')}
-• Artistas: ${formData.get('artists')}
-• Audio: ${document.getElementById('audioFile').files[0]?.name}
-• Arte: ${document.getElementById('artworkFile').files[0]?.name}
-
-📧 Recibirás confirmación por email
-⏱️ Tiempo de revisión: 2-3 días hábiles`);
-                    
-                    document.querySelector('.submit-btn').innerHTML = 'Enviar';
-                    document.querySelector('.submit-btn').disabled = false;
-                    
-                    // Reset form
-                    this.reset();
-                    document.querySelectorAll('.upload-area').forEach(area => {
-                        area.classList.remove('success');
-                        area.innerHTML = area.innerHTML.replace(/✅.*/, area.querySelector('p').innerHTML);
-                    });
-                }, 2000);
-            } else {
+            if (!isValid) {
+                e.preventDefault();
                 alert('❌ Por favor completa todos los campos obligatorios marcados con *');
+                return;
             }
+            
+            // Si todo está válido, mostrar mensaje de procesamiento
+            document.querySelector('.submit-btn').innerHTML = 'Enviando...';
+            document.querySelector('.submit-btn').disabled = true;
+            
+            // El formulario se enviará automáticamente a Formspree
+            // Formspree redirigirá o mostrará mensaje de confirmación
         });
         
         // Establecer fecha mínima (hoy)
